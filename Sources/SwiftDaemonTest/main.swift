@@ -4,7 +4,7 @@ import Glibc
 import Darwin
 #endif
 
-import SwiftDaemon
+import SwiftDaemonLib
 
 
 SwiftDaemon.daemonize(inDir: "/tmp") {

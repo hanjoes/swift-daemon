@@ -6,8 +6,8 @@ let package = Package(
     name: "SwiftDaemon",
     products: [
         .library(
-            name: "SwiftDaemon",
-            targets: ["SwiftDaemon"]),
+            name: "SwiftDaemonLib",
+            targets: ["SwiftDaemonLib"]),
         .executable(
             name: "SwiftDaemonTest",
             targets: ["SwiftDaemonTest"]),
@@ -16,10 +16,10 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SwiftDaemon",
+            name: "SwiftDaemonLib",
             dependencies: []),
         .target(
             name: "SwiftDaemonTest",
-            dependencies: ["SwiftDaemon"]),
+            dependencies: ["SwiftDaemonLib"]),
     ]
 )
