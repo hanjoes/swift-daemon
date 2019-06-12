@@ -1,13 +1,11 @@
-# SwiftDaemon
+#if os(Linux)
+import Glibc
+#else
+import Darwin
+#endif
 
-Daemonize a given routine.
-
-__"fork"__ is "hidden" from user by Swift, I stole a piece of code from project [Curassow](https://github.com/kylef-archive/Curassow) to re-surface the "fork" system call in Swift.
-
-# Usage
-
-```Swift
 import SwiftDaemon
+
 
 SwiftDaemon.daemonize(inDir: "/tmp") {
   let fd = fopen("SwiftDaemonTest.log", "w")
@@ -19,4 +17,4 @@ SwiftDaemon.daemonize(inDir: "/tmp") {
     fflush(fd)
   }
 }
-```
+
