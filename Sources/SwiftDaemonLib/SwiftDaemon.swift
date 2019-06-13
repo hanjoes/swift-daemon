@@ -14,6 +14,7 @@ public struct SwiftDaemon {
   ///
   /// - Note: [reference](shorturl.at/zKRXY)
   public static func daemonize(inDir dir: String,
+                               foreground: Bool,
                                routine: () throws -> ()) rethrows {
 
     // fork off the parent process
@@ -24,40 +25,42 @@ public struct SwiftDaemon {
         exit(EXIT_SUCCESS)
     }
 
-    // change file mode mask (umask)
-    umask(0)
+    if !foreground {
+      // change file mode mask (umask)
+      umask(0)
 
-    // create a unique Session ID (SID)
-    ret = setsid()
-    if ret < 0 {
-      exit(EXIT_FAILURE)
+      // create a unique Session ID (SID)
+      ret = setsid()
+      if ret < 0 {
+        exit(EXIT_FAILURE)
+      }
+
+      // change the current working directory to a safe place
+      ret = chdir(dir)
+      if ret < 0 {
+        exit(EXIT_FAILURE)
+      }
+
+      // close standard file descriptors, instead we redirect everything to "null"
+      let nfd = open("/dev/null", O_RDWR)
+      if nfd < 0 {
+        exit(EXIT_FAILURE)
+      }
+
+      close(0)
+
+      ret = dup2(nfd, 1)
+      if ret < 0 {
+        exit(EXIT_FAILURE)
+      }
+        
+      dup2(nfd, 2)
+      if ret < 0 {
+        exit(EXIT_FAILURE)
+      }
+
+      close(nfd)
     }
-
-    // change the current working directory to a safe place
-    ret = chdir(dir)
-    if ret < 0 {
-      exit(EXIT_FAILURE)
-    }
-
-    // close standard file descriptors, instead we redirect everything to "null"
-    let nfd = open("/dev/null", O_RDWR)
-    if nfd < 0 {
-      exit(EXIT_FAILURE)
-    }
-
-    close(0)
-
-    ret = dup2(nfd, 1)
-    if ret < 0 {
-      exit(EXIT_FAILURE)
-    }
-      
-    dup2(nfd, 2)
-    if ret < 0 {
-      exit(EXIT_FAILURE)
-    }
-
-    close(nfd)
 
     // start routine
     try routine()
